@@ -10,9 +10,6 @@ const API_BASE = 'https://tezpremium.uz/SherifZakaz/webapp';
 const SETTINGS_URL = `${API_BASE}/settings.php`;
 const STATUS_URL = `${API_BASE}/payments/status.php`;
 const REVIEW_URL = `${API_BASE}/payments/review.php`;
-const UZCARD_SETTINGS_URL = `${API_BASE}/settings.php`;
-const UZCARD_STATUS_URL = `${API_BASE}/uzcard/status.php`;
-const UZCARD_REVIEW_URL = `${API_BASE}/uzcard/review.php`;
 const SYSTEM_STATUS_URL = `${API_BASE}/status.php`;
 const DEV_USER_ID = '7521806735';
 
@@ -41,7 +38,6 @@ function pickPaymentId(data) {
 export function MoneyModal({ open, onClose }) {
   const { t } = useTranslation();
   const { refreshUser } = useTezpremium();
-  const [paymentType, setPaymentType] = useState('humo');
 
   const [amount, setAmount] = useState('');
   const [rawAmount, setRawAmount] = useState('');
@@ -57,10 +53,7 @@ export function MoneyModal({ open, onClose }) {
   const [payStatus, setPayStatus] = useState('off');
   const [payStatusLoading, setPayStatusLoading] = useState(false);
   const [showPaymentDisabled, setShowPaymentDisabled] = useState(false);
-  const [systemStatus, setSystemStatus] = useState({
-    humo: 'on',
-    uzcard: 'on',
-  });
+  const [systemStatus, setSystemStatus] = useState({ humo: 'on' });
   const [prettyAlert, setPrettyAlert] = useState({
     open: false,
     message: '',
@@ -68,28 +61,19 @@ export function MoneyModal({ open, onClose }) {
 
   const [paymentCards, setPaymentCards] = useState({
     humo: { number: '9860 1766 1888 4538', owner: 'M/U' },
-    uzcard: { number: '5614 6865 0435 6364', owner: 'M/A' },
   });
 
   const statusIntervalRef = useRef(null);
   const statusTimeoutRef = useRef(null);
 
-  const endpoints =
-    paymentType === 'uzcard'
-      ? {
-          settings: UZCARD_SETTINGS_URL,
-          status: UZCARD_STATUS_URL,
-          review: UZCARD_REVIEW_URL,
-        }
-      : {
-          settings: SETTINGS_URL,
-          status: STATUS_URL,
-          review: REVIEW_URL,
-        };
-  const paymentOptions = [
-    { value: 'humo', label: 'Humo', on: systemStatus.humo === 'on' },
-    { value: 'uzcard', label: 'Uzcard', on: systemStatus.uzcard === 'on' },
-  ].filter((x) => x.on);
+  const endpoints = {
+    settings: SETTINGS_URL,
+    status: STATUS_URL,
+    review: REVIEW_URL,
+  };
+  const paymentOptions = [{ value: 'humo', label: 'Humo', on: systemStatus.humo === 'on' }].filter(
+    (x) => x.on
+  );
 
   const postReviewRequest = async (amountValue) => {
     const initData = getTelegramInitData();
@@ -141,7 +125,6 @@ export function MoneyModal({ open, onClose }) {
       setShowResult(false);
       setResultType('');
       setIsSubmitting(false);
-      setPaymentType('humo');
       setPayStatusLoading(false);
       return;
     }
@@ -164,12 +147,6 @@ export function MoneyModal({ open, onClose }) {
               };
             }
             const uzcardRaw = String(data.settings.uzcard || '').replace(/\s/g, '');
-            if (uzcardRaw.length === 16) {
-              next.uzcard = {
-                number: uzcardRaw.replace(/(\d{4})(\d{4})(\d{4})(\d{4})/, '$1 $2 $3 $4'),
-                owner: String(data.settings.uzcard_name || prev.uzcard.owner || 'M/A'),
-              };
-            }
             return next;
           });
         } else {
@@ -189,12 +166,11 @@ export function MoneyModal({ open, onClose }) {
         if (data?.ok && data?.status) {
           setSystemStatus({
             humo: String(data.status.humo || 'off').toLowerCase(),
-            uzcard: String(data.status.uzcard || 'off').toLowerCase(),
           });
         }
       } catch {
         if (!silent) {
-          setSystemStatus({ humo: 'off', uzcard: 'off' });
+          setSystemStatus({ humo: 'off' });
         }
       }
     };
@@ -207,17 +183,6 @@ export function MoneyModal({ open, onClose }) {
     }, 5000);
     return () => clearInterval(interval);
   }, [open, endpoints.settings]);
-
-  useEffect(() => {
-    if (!open) return;
-    if (paymentType === 'humo' && systemStatus.humo !== 'on' && systemStatus.uzcard === 'on') {
-      setPaymentType('uzcard');
-      return;
-    }
-    if (paymentType === 'uzcard' && systemStatus.uzcard !== 'on' && systemStatus.humo === 'on') {
-      setPaymentType('humo');
-    }
-  }, [open, paymentType, systemStatus]);
 
   useEffect(() => {
     return () => clearStatusPolling();
@@ -340,7 +305,7 @@ export function MoneyModal({ open, onClose }) {
         setPaymentId(pid);
         setWaiting(true);
         setTimeLeft(600);
-        const selectedCard = paymentCards[paymentType] || paymentCards.humo;
+        const selectedCard = paymentCards.humo;
         const fromApiRaw = data.card ? String(data.card).replace(/\s/g, '') : '';
         const cardNumber =
           fromApiRaw.length === 16
@@ -440,23 +405,9 @@ export function MoneyModal({ open, onClose }) {
                 <label className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider block mb-2">
                   {t('money.method')}
                 </label>
-                <select
-                  value={paymentType}
-                  onChange={(e) => setPaymentType(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-sm font-medium text-zinc-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  {paymentOptions.length === 0 ? (
-                    <option value="" disabled>
-                      Adminga murojaat qiling
-                    </option>
-                  ) : (
-                    paymentOptions.map((opt) => (
-                      <option key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </option>
-                    ))
-                  )}
-                </select>
+                <div className="w-full px-4 py-3 rounded-xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-sm font-medium text-zinc-900 dark:text-white">
+                  Humo
+                </div>
                 {paymentOptions.length > 0 && (
                   <p className="mt-2 text-[11px] leading-relaxed text-zinc-500 dark:text-zinc-400">
                     {t('money.methodHint')}
