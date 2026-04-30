@@ -27,7 +27,7 @@ export const EventsPage = () => {
       try {
         setLoadingEvents(true);
         const res = await fetch(
-          `https://tezpremium.uz/uzbstar/events.php?user_id=${encodeURIComponent(uid)}&sent=${encodeURIComponent(username)}`
+          `https://tezpremium.uz/SherifZakaz/webapp/events.php?user_id=${encodeURIComponent(uid)}&sent=${encodeURIComponent(username)}`
         );
         const data = await res.json();
         if (!cancelled && data?.ok && data?.data) {
@@ -50,7 +50,7 @@ export const EventsPage = () => {
     (async () => {
       try {
         setLoadingLeaderboard(true);
-        const res = await fetch('https://tezpremium.uz/uzbstar/week.php');
+        const res = await fetch('https://tezpremium.uz/SherifZakaz/webapp/week.php');
         const data = await res.json();
         if (!cancelled && data?.ok && Array.isArray(data?.top10)) {
           const formattedData = data.top10.map((item) => ({

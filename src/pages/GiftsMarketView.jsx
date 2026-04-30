@@ -121,7 +121,8 @@ function prepareLottieAnimationData(data) {
 const OPENROUTER_KEY = import.meta.env.VITE_OPENROUTER_API_KEY ?? '';
 /** Market.jsx bilan bir xil: `giftlar.php` + `?type=` */
 const NFT_API_BASE =
-  import.meta.env.VITE_NFT_API_BASE ?? 'https://tezpremium.uz/uzbstar/giftlar.php';
+  import.meta.env.VITE_NFT_API_BASE ??
+  'https://tezpremium.uz/SherifZakaz/webapp/giftlar.php';
 const ODDIY_API_BASE = import.meta.env.VITE_ODDIY_API_BASE ?? 'https://tezpremium.uz/MilliyDokon/gifts/info.php';
 const NFT_ORDER_API_BASE =
   import.meta.env.VITE_NFT_ORDER_API_BASE ??
