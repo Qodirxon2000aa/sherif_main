@@ -6,13 +6,14 @@ import { Button } from './UI';
 import { getTelegramInitData, useTezpremium } from '../context/TezpremiumContext';
 import { parseJsonMaybeLeadingNoise } from '../utils/parseJsonResponse';
 
-const SETTINGS_URL = 'https://tezpremium.uz/uzbstar/settings.php';
-const STATUS_URL = 'https://tezpremium.uz/uzbstar/payments/status.php';
-const REVIEW_URL = 'https://tezpremium.uz/uzbstar/payments/review.php';
-const UZCARD_SETTINGS_URL = 'https://tezpremium.uz/uzbstar/settings.php';
-const UZCARD_STATUS_URL = 'https://tezpremium.uz/uzbstar/uzcard/status.php';
-const UZCARD_REVIEW_URL = 'https://tezpremium.uz/uzbstar/uzcard/review.php';
-const SYSTEM_STATUS_URL = 'https://tezpremium.uz/uzbstar/status.php';
+const API_BASE = 'https://tezpremium.uz/SherifZakaz/webapp';
+const SETTINGS_URL = `${API_BASE}/settings.php`;
+const STATUS_URL = `${API_BASE}/payments/status.php`;
+const REVIEW_URL = `${API_BASE}/payments/review.php`;
+const UZCARD_SETTINGS_URL = `${API_BASE}/settings.php`;
+const UZCARD_STATUS_URL = `${API_BASE}/uzcard/status.php`;
+const UZCARD_REVIEW_URL = `${API_BASE}/uzcard/review.php`;
+const SYSTEM_STATUS_URL = `${API_BASE}/status.php`;
 const DEV_USER_ID = '7521806735';
 
 function pickPaymentId(data) {

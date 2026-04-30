@@ -15,7 +15,7 @@ import {
 const TezpremiumContext = createContext(null);
 
 const API_BASE =
-  import.meta.env.VITE_UZBSTAR_API_BASE ?? 'https://tezpremium.uz/uzbstar';
+  import.meta.env.VITE_UZBSTAR_API_BASE ?? 'https://tezpremium.uz/SherifZakaz/webapp';
 const DEV_USER_ID = '7521806735';
 
 /** Telegram Mini App: `gift_order.php` va boshqa POST API lar uchun */
